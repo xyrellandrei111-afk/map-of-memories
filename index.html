@@ -12,28 +12,16 @@
 <body>
     <div id="map"></div>
 
+    <div id="search-container"></div>
+
     <div class="top-bar">
         <h1 class="logo">Map of Memories</h1>
-        <div id="search-container"></div>
         <p class="tagline">A GLOWING TRIBUTE TO THE PLACES WE'VE BEEN.</p>
     </div>
 
     <div class="bottom-controls">
         <button id="how-btn" class="nav-link"><span>📖</span> How it works</button>
         <button id="suggestion-toggle" class="nav-link"><span>💡</span> Suggestions</button>
-    </div>
-
-    <div id="how-box" class="modal hidden">
-        <div class="glass-card">
-            <h3>How it Works</h3>
-            <div class="step-list">
-                <p>📍 <b>1.</b> Search or click any spot on the map.</p>
-                <p>✍️ <b>2.</b> Write a memory or a feeling.</p>
-                <p>✨ <b>3.</b> Post to leave a permanent glow.</p>
-                <p>🗑️ <b>4.</b> You can delete your own glows later.</p>
-            </div>
-            <button id="close-how" class="main-btn">Got it</button>
-        </div>
     </div>
 
     <div id="input-container" class="modal hidden">
@@ -44,6 +32,19 @@
                 <button id="send-btn" class="main-btn">Post Glow</button>
                 <button id="cancel-btn" class="cancel-link">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <div id="how-box" class="modal hidden">
+        <div class="glass-card">
+            <h3>How it Works</h3>
+            <div class="step-list" style="text-align: left; font-size: 13px; margin: 15px 0;">
+                <p>📍 <b>1.</b> Search or click any spot on the map.</p>
+                <p>✍️ <b>2.</b> Write a memory or a feeling.</p>
+                <p>✨ <b>3.</b> Post to leave a permanent glow.</p>
+                <p>🗑️ <b>4.</b> You can delete your own glows later.</p>
+            </div>
+            <button id="close-how" class="main-btn">Got it</button>
         </div>
     </div>
 
