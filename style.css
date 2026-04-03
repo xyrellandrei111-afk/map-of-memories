@@ -1,34 +1,47 @@
-/* Core Styling */
-body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Inter', sans-serif; background: #000; color: white; }
+/* Layout Reset */
+body, html, #map { 
+    margin: 0 !important; 
+    padding: 0 !important; 
+    height: 100% !important; 
+    width: 100% !important; 
+    background: #000 !important;
+}
 
-/* Cinematic Header */
-.top-bar { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); z-index: 1000; text-align: center; width: 100%; pointer-events: none; }
-.logo { font-family: 'Playfair Display', serif; font-size: 42px; margin: 0; font-weight: 600; pointer-events: auto; background: linear-gradient(to bottom, #ff5eb1, #99048f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.tagline { color: rgba(255, 255, 255, 0.7); font-size: 10px; letter-spacing: 4px; margin-top: 5px; text-transform: uppercase; }
+/* Glassmorphism Modals - Fixes the "text on black" issue */
+.modal { 
+    position: fixed !important; 
+    top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0, 0, 0, 0.85) !important; 
+    backdrop-filter: blur(12px) !important; 
+    z-index: 9999 !important; 
+    display: flex; align-items: center; justify-content: center; 
+}
 
-/* Navigation Buttons */
-.bottom-controls { position: absolute; bottom: 25px; right: 25px; z-index: 1000; display: flex; gap: 12px; }
-.nav-link { background: rgba(30, 30, 30, 0.8) !important; font-size: 11px; padding: 10px 20px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); color: white; backdrop-filter: blur(10px); cursor: pointer; display: flex; align-items: center; gap: 8px; }
-
-/* Modals (Glassmorphism Fix) */
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(12px); z-index: 3000; display: flex; align-items: center; justify-content: center; }
 .hidden { display: none !important; }
-.glass-card { background: rgba(25, 25, 25, 0.95); border-radius: 28px; padding: 40px; width: 340px; border: 1px solid rgba(255, 255, 255, 0.15); text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.6); }
 
-/* Input Elements */
-textarea { width: 100%; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.2); border-radius: 15px; color: white; padding: 15px; margin: 20px 0; font-size: 14px; box-sizing: border-box; resize: none; }
-.main-btn { background: #99048f; color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 600; cursor: pointer; width: 100%; margin-bottom: 10px; }
-.cancel-link { background: none; border: none; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 13px; }
+.glass-card { 
+    background: rgba(25, 25, 25, 0.95) !important; 
+    border-radius: 28px !important; 
+    padding: 40px !important; 
+    width: 320px; 
+    border: 1px solid rgba(255, 255, 255, 0.15) !important; 
+    text-align: center;
+    color: white !important;
+}
 
-/* Map Popups */
-.leaflet-popup-content-wrapper { background: white !important; color: #222 !important; border-radius: 20px !important; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-.memory-note { font-size: 16px; margin: 10px 0; font-weight: 400; text-align: center; }
-.reaction-row { display: flex; justify-content: space-around; border-top: 1px solid #eee; padding-top: 12px; }
-.reaction-btn { background: none; border: none; font-size: 14px; color: #555; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+/* Header & Glows */
+.logo { 
+    font-family: 'Playfair Display', serif; 
+    font-size: 42px; 
+    background: linear-gradient(to bottom, #ff5eb1, #99048f); 
+    -webkit-background-clip: text; 
+    -webkit-text-fill-color: transparent; 
+}
 
-/* Glow Colors */
-.light-icon { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid white; }
+.light-icon { width: 14px; height: 14px; border-radius: 50%; border: 1px solid white; }
 .glow-purple { background: #bf5eff; box-shadow: 0 0 15px #bf5eff; }
 .glow-white { background: #ffffff; box-shadow: 0 0 15px #ffffff; }
 .glow-yellow { background: #ffea00; box-shadow: 0 0 15px #ffea00; }
 .glow-pink { background: #ff5eb1; box-shadow: 0 0 15px #ff5eb1; }
+
+.main-btn { background: #99048f; color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; width: 100%; }
