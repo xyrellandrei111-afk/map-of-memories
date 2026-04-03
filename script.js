@@ -34,10 +34,23 @@ const getRandomColor = () => {
 };
 
 // Global Delete Function
+// IMPROVED DELETE: Cleans database and local memory
 window.deleteGlow = async (id) => {
     if (confirm("Delete this memory forever?")) {
+        // 1. Remove from Supabase
         const { error } = await supabaseClient.from('memories').delete().eq('id', id);
-        if (!error) location.reload();
+        
+        if (!error) {
+            // 2. Remove from your local "my_glows" list so the button disappears
+            let myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
+            myGlows = myGlows.filter(glowId => glowId !== id);
+            localStorage.setItem('my_glows', JSON.stringify(myGlows));
+
+            // 3. Force a full refresh to clear the map markers
+            window.location.href = window.location.pathname + '?' + new Date().getTime();
+        } else {
+            alert("Delete failed: " + error.message);
+        }
     }
 };
 
@@ -54,7 +67,7 @@ function renderMemoryMarker(mem) {
 
     const popupHTML = `
         <div style="color:#222; text-align:center; min-width:140px;">
-            <p style="margin:0 0 10px 0;"><b>"${mem.message}"</b></p>
+            <p style="margin:0 0 10px 0; font-family:sans-serif;"><b>"${mem.message}"</b></p>
             <div style="display:flex; justify-content:space-around; font-size:12px; border-top:1px solid #eee; padding-top:8px;">
                 <span>🫂 ${mem.hug_count || 0}</span>
                 <span>💜 ${mem.purpleheart_count || 0}</span>
@@ -63,9 +76,9 @@ function renderMemoryMarker(mem) {
             ${isMine ? `<button class="delete-btn" onclick="deleteGlow('${mem.id}')">Delete my glow</button>` : ''}
         </div>`;
 
-    L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
+    // Add the marker to the map
+    const marker = L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
 }
-
 map.on('click', (e) => {
     selectedCoords = e.latlng;
     toggleModal('input-container', true);
