@@ -1,293 +1,35 @@
-/* --- Core Reset --- */
-body, html { 
-    margin: 0; 
-    padding: 0; 
-    height: 100%; 
-    width: 100%; 
-    font-family: 'Inter', sans-serif; 
-    background: #000; 
-    overflow: hidden; 
-}
+body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Inter', sans-serif; background: #000; }
 
-#map { 
-    width: 100%; 
-    height: 100vh; 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    z-index: 1; 
-}
-
-/* --- Header Section --- */
-.main-header { 
-    position: fixed; 
-    top: 30px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    z-index: 1000; 
-    text-align: center; 
-    color: white; 
-    pointer-events: none; 
-}
-
-.main-header h1 {
-    font-family: 'Playfair Display', serif; 
-    font-size: 32px; 
-    margin: 0;
-    background: linear-gradient(45deg, #fff300, #ff00ff, #bf00ff, #00d4ff);
-    background-clip: text; 
-    -webkit-background-clip: text; 
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 10px rgba(191, 0, 255, 0.3));
-}
-
-.main-header p { 
-    font-size: 10px; 
-    letter-spacing: 3px; 
-    opacity: 0.8; 
-    margin-top: 8px; 
-    text-transform: uppercase;
-}
-
-/* --- Search Bar Styling --- */
-.leaflet-control-geocoder {
-    position: fixed !important; 
-    top: 115px !important; 
-    left: 50% !important; 
-    transform: translateX(-50%) !important;
-    z-index: 1000 !important; 
-    background: rgba(20, 20, 20, 0.7) !important; 
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 15px !important; 
-    backdrop-filter: blur(12px); 
-    -webkit-backdrop-filter: blur(12px);
-    width: 300px; 
-    margin: 0 !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-}
-
-.leaflet-control-geocoder-icon { filter: invert(1) opacity(0.7); }
-.leaflet-control-geocoder-form input { 
-    color: white !important; 
-    background: transparent !important; 
-    text-align: center; 
-    font-size: 14px;
-    padding: 10px !important;
-}
+/* --- UI Elements --- */
+.top-bar { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; text-align: center; width: 90%; pointer-events: none; }
+.logo { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; margin: 0; font-weight: 600; pointer-events: auto; }
+#user-controls { pointer-events: auto; margin-top: 10px; }
 
 /* --- Glassmorphism Modals --- */
-#input-container, #suggestion-box, #how-box {
-    position: fixed; 
-    z-index: 2000; 
-    display: flex; 
-    flex-direction: column; 
-    background: rgba(25, 25, 25, 0.75) !important; 
-    backdrop-filter: blur(20px); 
-    -webkit-backdrop-filter: blur(20px); 
-    padding: 30px; 
-    border-radius: 28px; 
-    border: 1px solid rgba(255, 255, 255, 0.12); 
-    color: white;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8);
-}
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+.hidden { display: none; }
+.glass-card { background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; width: 320px; color: white; text-align: center; }
 
-#input-container { 
-    top: 50%; 
-    left: 50%; 
-    transform: translate(-50%, -50%); 
-    width: 340px; 
-    text-align: center; 
-}
-
-#suggestion-box, #how-box { 
-    bottom: 90px; 
-    right: 25px; 
-    width: 300px; 
-}
-
-/* Ensure Inputs inside Modals look good */
-#memory-input, #suggestion-text {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    color: white;
-    padding: 12px;
-    margin: 15px 0;
-    outline: none;
-}
-
-#memory-input:focus { border-color: #bf00ff; }
-
-/* --- The Visibility Fix --- */
-.hidden { 
-    display: none !important; 
-}
-
-/* --- Button Layout & Design --- */
-.modal-buttons { 
-    display: flex !important; 
-    gap: 12px; 
-    margin-top: 10px; 
-}
-
-#send-btn, #submit-suggestion, #close-how { 
-    flex: 2; 
-    background: #99048f; /* Your Purple */
-    border: none; 
-    color: white; /* Changed to white for better contrast on purple */
-    padding: 14px; 
-    border-radius: 14px; 
-    cursor: pointer; 
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-#send-btn:hover, #submit-suggestion:hover {
-    background: #bf00ff;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(191, 0, 255, 0.4);
-}
-
-#cancel-btn, #close-suggestion { 
-    flex: 1; 
-    background: rgba(255, 255, 255, 0.08); 
-    border: 1px solid rgba(255, 255, 255, 0.1); 
-    color: #ccc; 
-    border-radius: 14px; 
-    cursor: pointer; 
-    transition: background 0.3s ease;
-}
-
-#cancel-btn:hover { background: rgba(255, 255, 255, 0.15); color: white; }
-
-/* --- Bottom Control Bar --- */
-.bottom-controls { 
-    position: fixed; 
-    bottom: 25px; 
-    right: 25px; 
-    z-index: 2500; 
-    display: flex; 
-    gap: 12px; 
-}
-
-#suggestion-toggle, #how-btn { 
-    background: rgba(30, 30, 30, 0.6); 
-    color: white; 
-    border: 1px solid rgba(255, 255, 255, 0.1); 
-    cursor: pointer; 
-    padding: 12px 20px; 
-    border-radius: 25px; 
-    font-size: 13px; 
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
-
-#suggestion-toggle:hover, #how-btn:hover {
-    background: rgba(50, 50, 50, 0.8);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-/* --- Reactions UI --- */
-.reaction-row { 
-    display: flex; 
-    justify-content: center; 
-    gap: 12px; 
-    margin-top: 15px; 
-}
-
-.reaction-btn { 
-    background: rgba(255, 255, 255, 0.08); 
-    border: 1px solid rgba(255, 255, 255, 0.1); 
-    color: white; 
-    border-radius: 12px; 
-    padding: 10px 15px; 
-    cursor: pointer; 
-    transition: all 0.2s ease; 
-}
-
-.reaction-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
-    transform: scale(1.05);
-}
-
-.reaction-btn:active { 
-    transform: scale(0.95); 
-}
-
-/* --- Glowing Map Markers --- */
-.light-icon { 
-    width: 14px; 
-    height: 14px; 
-    border-radius: 50%; 
-    box-shadow: 0 0 20px 6px currentColor; 
-    animation: pulse 2s infinite; 
-}
-
-@keyframes pulse { 
-    0%, 100% { transform: scale(1); opacity: 0.8; filter: brightness(1); } 
-    50% { transform: scale(1.4); opacity: 1; filter: brightness(1.3); } 
-}
-
-.color-yellow { color: #fff300; background: #fff300; }
-.color-pink { color: #ff00ff; background: #ff00ff; }
-.color-purple { color: #bf00ff; background: #bf00ff; }
-.color-white { color: #ffffff; background: #ffffff; }
-.color-blue { color: #00d4ff; background: #00d4ff; }
-/* --- Leaflet Popup Styling --- */
+/* --- High-End Wide Popups --- */
 .leaflet-popup-content-wrapper {
-    background: rgba(25, 25, 25, 0.8) !important;
-    backdrop-filter: blur(15px);
+    background: rgba(15, 15, 15, 0.9) !important;
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 20px !important;
-    color: white !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    border-radius: 24px !important;
+    width: 320px !important; /* WIDER */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
+.leaflet-popup-content { margin: 20px !important; width: 280px !important; color: white !important; }
+.memory-note { font-size: 18px; font-weight: 600; color: #fff300; line-height: 1.4; margin-bottom: 15px; }
 
-.leaflet-popup-tip { background: rgba(25, 25, 25, 0.8) !important; }
+/* --- Reactions & Comments --- */
+.reaction-row { display: flex; gap: 10px; margin-bottom: 15px; }
+.reaction-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 12px; border-radius: 12px; cursor: pointer; transition: 0.3s; }
+.reaction-btn:hover { background: rgba(255,255,255,0.2); }
 
-/* --- Comments UI --- */
-.comment-list {
-    max-height: 100px;
-    overflow-y: auto;
-    margin-bottom: 10px;
-}
+.comment-item { font-size: 12px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; margin-bottom: 5px; border-left: 3px solid #ff00ff; text-align: left; }
 
-.comment-item {
-    font-size: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 6px 10px;
-    border-radius: 8px;
-    margin-bottom: 5px;
-    border-left: 3px solid #99048f;
-    animation: fadeIn 0.3s ease;
-}
-
-.comment-input-row {
-    display: flex;
-    gap: 8px;
-}
-
-.comment-input {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    color: white;
-    padding: 6px 10px;
-    font-size: 12px;
-    outline: none;
-}
-
-.comment-submit {
-    background: #99048f;
-    border: none;
-    color: white;
-    padding: 4px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+/* --- Buttons --- */
+button { background: #ff00ff; color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+.secondary-btn { background: rgba(255,255,255,0.1); margin-left: 10px; }
+input, textarea { width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: white; padding: 10px; margin: 10px 0; box-sizing: border-box; }
