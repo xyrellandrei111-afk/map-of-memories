@@ -1,8 +1,7 @@
 // --- CONFIGURATION ---
-// Replace these with your actual credentials from Supabase Settings > API
-const SUPABASE_URL = 'https://ysiminimhqyirufvlkvk.supabase.co'; //
-const SUPABASE_KEY = 'sb_publishable_Pf2W5TClCGKBoFQKGOrW7Q_5rw_J0sP'; // From your dashboard
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); //
+const SUPABASE_URL = 'https://ysiminimhqyirufvlkvk.supabase.co'; 
+const SUPABASE_KEY = 'sb_publishable_Pf2W5TClCGKBoFQKGOrW7Q_5rw_J0sP'; 
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); 
 
 const map = L.map('map', { zoomControl: false }).setView([16.15, 120.40], 13);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
@@ -37,18 +36,50 @@ function renderMemoryMarker(mem) {
         iconSize: [12, 12] 
     });
 
-    const interactionHTML = `
-        <div class="reaction-row">
-            <button class="reaction-btn" onclick="updateReact('${mem.id}', 'hug')">🫂 <span id="hug-${mem.id}">${mem.hug_count}</span></button>
-            <button class="reaction-btn" onclick="updateReact('${mem.id}', 'purpleheart')">💜 <span id="purpleheart-${mem.id}">${mem.purpleheart_count}</span></button>
-            <button class="reaction-btn" onclick="updateReact('${mem.id}', 'like')">👍 <span id="like-${mem.id}">${mem.like_count}</span></button>
+    const popupHTML = `
+        <div class="memory-card">
+            <div class="memory-note" style="color: #fff300; font-size: 15px; margin-bottom: 10px; font-weight: bold;">
+                "${mem.message}"
+            </div>
+            
+            <div class="reaction-row">
+                <button class="reaction-btn" onclick="updateReact('${mem.id}', 'hug')">🫂 <span id="hug-${mem.id}">${mem.hug_count}</span></button>
+                <button class="reaction-btn" onclick="updateReact('${mem.id}', 'purpleheart')">💜 <span id="purpleheart-${mem.id}">${mem.purpleheart_count}</span></button>
+                <button class="reaction-btn" onclick="updateReact('${mem.id}', 'like')">👍 <span id="like-${mem.id}">${mem.like_count}</span></button>
+            </div>
+
+            <div class="comment-section">
+                <p style="font-size: 10px; opacity: 0.6; margin: 12px 0 6px 0; letter-spacing: 1px;">COMMUNITY THOUGHTS</p>
+                <div class="comment-list" id="comments-${mem.id}">
+                    <div class="comment-item">Magical memory! ✨</div>
+                </div>
+            </div>
+
+            <div class="comment-input-row">
+                <input type="text" id="input-${mem.id}" class="comment-input" placeholder="Leave a comment...">
+                <button onclick="submitComment('${mem.id}')" class="comment-submit">➔</button>
+            </div>
         </div>`;
 
-    const popupHTML = `<div class="popup-container"><div class="memory-note">"${mem.message}"</div>${interactionHTML}</div>`;
     L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
 }
 
-// --- SAVE TO SUPABASE (Requires INSERT policy) ---
+// --- COMMENT LOGIC ---
+window.submitComment = (id) => {
+    const input = document.getElementById(`input-${id}`);
+    const list = document.getElementById(`comments-${id}`);
+    
+    if (input.value.trim() !== "") {
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        div.innerText = input.value;
+        list.appendChild(div);
+        input.value = ""; // Clear input
+        list.scrollTop = list.scrollHeight; // Auto-scroll to bottom
+    }
+};
+
+// --- SAVE TO SUPABASE ---
 document.getElementById('send-btn').addEventListener('click', async () => {
     const message = document.getElementById('memory-input').value;
     if (message && selectedCoords) {
@@ -68,7 +99,7 @@ document.getElementById('send-btn').addEventListener('click', async () => {
     }
 });
 
-// --- UPDATE REACTIONS (Requires UPDATE policy) ---
+// --- UPDATE REACTIONS ---
 window.updateReact = async (id, type) => {
     const el = document.getElementById(`${type}-${id}`);
     const currentCount = parseInt(el.innerText);
