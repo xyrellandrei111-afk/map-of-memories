@@ -56,7 +56,7 @@ map.on('click', (e) => {
 document.getElementById('send-btn').onclick = async () => {
     const message = document.getElementById('memory-input').value;
     if (message && selectedCoords) {
-        // We are sending every possible column to satisfy the Database constraints
+        // This object sends EVERYTHING your DB is asking for
         const { data, error } = await supabaseClient.from('memories').insert([{ 
             message: message, 
             lat: selectedCoords.lat, 
@@ -64,7 +64,7 @@ document.getElementById('send-btn').onclick = async () => {
             color_class: 'color-purple',
             hug_count: 0,
             purpleheart_count: 0,
-            like_count: 0 // Added this to fix your latest error
+            like_count: 0 
         }]).select();
         
         if (error) {
@@ -77,6 +77,7 @@ document.getElementById('send-btn').onclick = async () => {
         }
     }
 };
+
 document.getElementById('cancel-btn').onclick = () => toggleModal('input-container', false);
 
 loadMemories();
