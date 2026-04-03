@@ -1,47 +1,32 @@
-/* Layout Reset */
-body, html, #map { 
-    margin: 0 !important; 
-    padding: 0 !important; 
-    height: 100% !important; 
-    width: 100% !important; 
-    background: #000 !important;
+/* Core Setup */
+body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden; }
+
+/* Search Bar (Geocoder) Position */
+.leaflet-control-geocoder { 
+    margin-top: 100px !important; 
+    margin-left: 20px !important; 
+    border-radius: 12px !important; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
 }
 
-/* Glassmorphism Modals - Fixes the "text on black" issue */
-.modal { 
-    position: fixed !important; 
-    top: 0; left: 0; width: 100%; height: 100%; 
-    background: rgba(0, 0, 0, 0.85) !important; 
-    backdrop-filter: blur(12px) !important; 
-    z-index: 9999 !important; 
-    display: flex; align-items: center; justify-content: center; 
-}
+/* Header UI */
+.top-bar { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); z-index: 1000; text-align: center; width: 100%; pointer-events: none; }
+.logo { font-family: 'Playfair Display', serif; font-size: 42px; margin: 0; font-weight: 600; pointer-events: auto; background: linear-gradient(to bottom, #ff5eb1, #99048f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.tagline { color: rgba(255, 255, 255, 0.7); font-size: 10px; letter-spacing: 4px; text-transform: uppercase; }
 
+/* Modals & Glassmorphism */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); z-index: 5000; display: flex; align-items: center; justify-content: center; }
 .hidden { display: none !important; }
+.glass-card { background: rgba(25, 25, 25, 0.95); border-radius: 28px; padding: 35px; width: 320px; color: white; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
 
-.glass-card { 
-    background: rgba(25, 25, 25, 0.95) !important; 
-    border-radius: 28px !important; 
-    padding: 40px !important; 
-    width: 320px; 
-    border: 1px solid rgba(255, 255, 255, 0.15) !important; 
-    text-align: center;
-    color: white !important;
-}
+/* Buttons & Inputs */
+.main-btn { background: #99048f; color: white; border: none; padding: 12px; border-radius: 12px; width: 100%; cursor: pointer; font-weight: 600; }
+.nav-link { background: rgba(30, 30, 30, 0.9) !important; color: white; border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 50px; cursor: pointer; }
+textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: white; padding: 12px; margin: 15px 0; box-sizing: border-box; }
 
-/* Header & Glows */
-.logo { 
-    font-family: 'Playfair Display', serif; 
-    font-size: 42px; 
-    background: linear-gradient(to bottom, #ff5eb1, #99048f); 
-    -webkit-background-clip: text; 
-    -webkit-text-fill-color: transparent; 
-}
-
-.light-icon { width: 14px; height: 14px; border-radius: 50%; border: 1px solid white; }
+/* Glowing Markers */
+.light-icon { width: 12px; height: 12px; border-radius: 50%; border: 1px solid white; }
 .glow-purple { background: #bf5eff; box-shadow: 0 0 15px #bf5eff; }
 .glow-white { background: #ffffff; box-shadow: 0 0 15px #ffffff; }
 .glow-yellow { background: #ffea00; box-shadow: 0 0 15px #ffea00; }
 .glow-pink { background: #ff5eb1; box-shadow: 0 0 15px #ff5eb1; }
-
-.main-btn { background: #99048f; color: white; border: none; padding: 12px; border-radius: 12px; cursor: pointer; width: 100%; }
