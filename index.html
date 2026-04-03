@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Map of Memories</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -31,7 +30,7 @@
                 <p>✨ <b>Step 3:</b> Post it to leave a permanent glow.</p>
                 <p>💜 <b>Step 4:</b> React to other people's memories.</p>
             </div>
-            <button id="close-how" style="width: 100%;">Get Started</button>
+            <button id="close-how" class="main-btn">Get Started</button>
         </div>
     </div>
 
@@ -40,8 +39,8 @@
             <h3>Suggestions</h3>
             <textarea id="suggestion-input" placeholder="Have an idea to make this map better?"></textarea>
             <div class="btn-group">
-                <button id="send-suggestion">Send</button>
-                <button id="close-suggestion">Close</button>
+                <button id="send-suggestion" class="main-btn">Send</button>
+                <button id="close-suggestion" class="cancel-link">Close</button>
             </div>
         </div>
     </div>
@@ -51,14 +50,13 @@
             <h3>Share a Memory</h3>
             <textarea id="memory-input" placeholder="What happened here?"></textarea>
             <div class="btn-group">
-                <button id="send-btn">Post Glow</button>
-                <button id="cancel-btn">Cancel</button>
+                <button id="send-btn" class="main-btn">Post Glow</button>
+                <button id="cancel-btn" class="cancel-link">Cancel</button>
             </div>
         </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
