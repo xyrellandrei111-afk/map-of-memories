@@ -9,7 +9,7 @@ let selectedCoords = null;
 
 const toggleModal = (id, show) => {
     const el = document.getElementById(id);
-    show ? el.classList.remove('hidden') : el.classList.add('hidden');
+    if(el) show ? el.classList.remove('hidden') : el.classList.add('hidden');
 };
 
 document.getElementById('how-btn').onclick = () => toggleModal('how-box', true);
@@ -56,18 +56,19 @@ map.on('click', (e) => {
 document.getElementById('send-btn').onclick = async () => {
     const message = document.getElementById('memory-input').value;
     if (message && selectedCoords) {
-        // We include default counts here just in case the database isn't setting them
+        // FIXED: Explicitly sending color_class and default counts to bypass DB constraints
         const { data, error } = await supabaseClient.from('memories').insert([{ 
             message: message, 
             lat: selectedCoords.lat, 
             lng: selectedCoords.lng,
+            color_class: 'color-purple',
             hug_count: 0,
             purpleheart_count: 0
         }]).select();
         
         if (error) {
             console.error("Post Error:", error.message);
-            alert("Could not post: " + error.message);
+            alert("Database Error: " + error.message);
         } else { 
             renderMemoryMarker(data[0]); 
             toggleModal('input-container', false);
