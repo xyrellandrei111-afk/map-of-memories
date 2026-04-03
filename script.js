@@ -7,7 +7,6 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').add
 
 let selectedCoords = null;
 
-// --- MODAL TOGGLES ---
 const toggleModal = (id, show) => {
     const el = document.getElementById(id);
     show ? el.classList.remove('hidden') : el.classList.add('hidden');
@@ -18,7 +17,6 @@ document.getElementById('close-how').onclick = () => toggleModal('how-box', fals
 document.getElementById('suggestion-toggle').onclick = () => toggleModal('suggestion-box', true);
 document.getElementById('close-suggestion').onclick = () => toggleModal('suggestion-box', false);
 
-// --- LOAD DATA ---
 async function loadMemories() {
     const { data, error } = await supabaseClient.from('memories').select('*');
     if (!error) data.forEach(mem => renderMemoryMarker(mem));
@@ -43,7 +41,6 @@ function renderMemoryMarker(mem) {
     L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
 }
 
-// --- REACTIONS ---
 window.updateReact = async (id, type) => {
     const el = document.getElementById(`${type}-${id}`);
     const count = parseInt(el.innerText) || 0;
@@ -51,7 +48,6 @@ window.updateReact = async (id, type) => {
     if (!error) el.innerText = count + 1;
 };
 
-// --- POSTING ---
 map.on('click', (e) => {
     selectedCoords = e.latlng;
     toggleModal('input-container', true);
