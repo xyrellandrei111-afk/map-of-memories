@@ -7,13 +7,13 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').add
 
 let selectedCoords = null;
 
-// Fix: Wrap in DOMContentLoaded to prevent "appendChild" null error
+// Initialize Search Bar
 document.addEventListener('DOMContentLoaded', () => {
     const searchContainer = document.getElementById('search-container');
     if (searchContainer) {
         const geocoder = L.Control.geocoder({
             defaultMarkGeocode: false,
-            placeholder: "Search location...",
+            placeholder: "Search..."
         }).on('markgeocode', function(e) {
             selectedCoords = e.geocode.center;
             map.setView(selectedCoords, 16);
@@ -33,13 +33,11 @@ const getRandomColor = () => {
     return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// --- DELETE LOGIC ---
+// Global Delete Function
 window.deleteGlow = async (id) => {
-    if (confirm("Permanently delete your memory?")) {
+    if (confirm("Delete this memory forever?")) {
         const { error } = await supabaseClient.from('memories').delete().eq('id', id);
-        if (!error) {
-            location.reload(); 
-        }
+        if (!error) location.reload();
     }
 };
 
@@ -51,13 +49,12 @@ function renderMemoryMarker(mem) {
         iconSize: [12, 12] 
     });
 
-    // Check if user owns this glow via localStorage
     const myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
     const isMine = myGlows.includes(mem.id);
 
     const popupHTML = `
         <div style="color:#222; text-align:center; min-width:140px;">
-            <p><b>"${mem.message}"</b></p>
+            <p style="margin:0 0 10px 0;"><b>"${mem.message}"</b></p>
             <div style="display:flex; justify-content:space-around; font-size:12px; border-top:1px solid #eee; padding-top:8px;">
                 <span>🫂 ${mem.hug_count || 0}</span>
                 <span>💜 ${mem.purpleheart_count || 0}</span>
@@ -74,16 +71,21 @@ map.on('click', (e) => {
     toggleModal('input-container', true);
 });
 
+// Post Glow (Fixes null column errors)
 document.getElementById('send-btn').onclick = async () => {
     const msg = document.getElementById('memory-input').value;
     if (msg && selectedCoords) {
         const { data, error } = await supabaseClient.from('memories').insert([{ 
-            message: msg, lat: selectedCoords.lat, lng: selectedCoords.lng,
-            color_class: getRandomColor(), hug_count: 0, purpleheart_count: 0, like_count: 0 
+            message: msg, 
+            lat: selectedCoords.lat, 
+            lng: selectedCoords.lng,
+            color_class: getRandomColor(),
+            hug_count: 0,
+            purpleheart_count: 0,
+            like_count: 0 
         }]).select();
         
         if(!error) { 
-            // Store ID locally so user can delete it
             const myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
             myGlows.push(data[0].id);
             localStorage.setItem('my_glows', JSON.stringify(myGlows));
@@ -91,10 +93,13 @@ document.getElementById('send-btn').onclick = async () => {
             renderMemoryMarker(data[0]); 
             toggleModal('input-container', false); 
             document.getElementById('memory-input').value = ""; 
+        } else {
+            alert("Error: " + error.message);
         }
     }
 };
 
+// UI Handlers
 document.getElementById('how-btn').onclick = () => toggleModal('how-box', true);
 document.getElementById('close-how').onclick = () => toggleModal('how-box', false);
 document.getElementById('suggestion-toggle').onclick = () => toggleModal('suggestion-box', true);
