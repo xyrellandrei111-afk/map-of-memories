@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map of Memories</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <h1>Map of Memories</h1>
+        <p>A GLOWING TRIBUTE TO THE PLACES WE'VE BEEN.</p>
+    </header>
+
+    <div id="input-container" class="hidden">
+        <h3>New Memory</h3>
+        <p>This message will glow for 24 hours.</p>
+        <input type="text" id="memory-input" placeholder="What happened here?" maxlength="100">
+        <div class="modal-buttons">
+            <button id="send-btn">Post Glow ✨</button>
+            <button id="cancel-btn">Cancel</button>
+        </div>
+    </div>
+
+    <div class="bottom-controls">
+        <button id="how-btn">📖 How it works</button>
+        <button id="suggestion-toggle">💡 Suggestions</button>
+    </div>
+
+    <div id="how-box" class="hidden">
+        <h3>How it Works</h3>
+        <div class="step-list">
+            <p><strong>1. Search:</strong> Find a specific place using the search bar.</p>
+            <p><strong>2. Post:</strong> Click anywhere on the map to drop a memory.</p>
+            <p><strong>3. Glow:</strong> Your post stays lit for 24 hours.</p>
+            <p><strong>4. Connect:</strong> React or reply to others' glows.</p>
+            <p><strong>4. Connect:</strong> React or reply to others.</p>
+        </div>
+        <div class="modal-buttons">
+            <button id="close-how">Got it!</button>
+        </div>
+    </div>
+
+    <div id="suggestion-box" class="hidden">
+        <h3>Feedback</h3>
+        <p>How can we make this better?</p>
+        <textarea id="suggestion-text" placeholder="Type your ideas here..." rows="3"></textarea>
+        <div class="modal-buttons">
+            <button id="submit-suggestion">Submit</button>
+            <button id="close-suggestion">Close</button>
+        </div>
+    </div>
+
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
