@@ -7,6 +7,12 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').add
 
 let selectedCoords = null;
 
+// --- UI TOGGLES ---
+document.getElementById('how-btn').onclick = () => document.getElementById('how-box').classList.remove('hidden');
+document.getElementById('close-how').onclick = () => document.getElementById('how-box').classList.add('hidden');
+document.getElementById('suggestion-toggle').onclick = () => document.getElementById('suggestion-box').classList.remove('hidden');
+document.getElementById('close-suggestion').onclick = () => document.getElementById('suggestion-box').classList.add('hidden');
+
 // --- LOAD DATA ---
 async function loadMemories() {
     const { data, error } = await supabaseClient.from('memories').select('*');
@@ -16,7 +22,7 @@ async function loadMemories() {
 function renderMemoryMarker(mem) {
     const glowIcon = L.divIcon({ 
         className: 'custom-icon', 
-        html: `<div class="light-icon color-purple"></div>`, 
+        html: `<div class="light-icon"></div>`, 
         iconSize: [12, 12] 
     });
 
@@ -26,9 +32,7 @@ function renderMemoryMarker(mem) {
             <div class="reaction-row">
                 <button class="reaction-btn" onclick="updateReact('${mem.id}', 'hug')">🫂 <span id="hug-${mem.id}">${mem.hug_count || 0}</span></button>
                 <button class="reaction-btn" onclick="updateReact('${mem.id}', 'purpleheart')">💜 <span id="purpleheart-${mem.id}">${mem.purpleheart_count || 0}</span></button>
-                <button class="reaction-btn" onclick="updateReact('${mem.id}', 'like')">👍 <span id="like-${mem.id}">${mem.like_count || 0}</span></button>
             </div>
-            <div style="font-size: 10px; opacity: 0.4; text-align: center;">Click to react to this memory</div>
         </div>`;
 
     L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
@@ -38,11 +42,7 @@ function renderMemoryMarker(mem) {
 window.updateReact = async (id, type) => {
     const el = document.getElementById(`${type}-${id}`);
     const count = parseInt(el.innerText) || 0;
-    const { error } = await supabaseClient
-        .from('memories')
-        .update({ [`${type}_count`]: count + 1 })
-        .eq('id', id);
-    
+    const { error } = await supabaseClient.from('memories').update({ [`${type}_count`]: count + 1 }).eq('id', id);
     if (!error) el.innerText = count + 1;
 };
 
@@ -52,23 +52,19 @@ map.on('click', (e) => {
     document.getElementById('input-container').classList.remove('hidden');
 });
 
-document.getElementById('send-btn').addEventListener('click', async () => {
+document.getElementById('send-btn').onclick = async () => {
     const message = document.getElementById('memory-input').value;
     if (message && selectedCoords) {
         const { data, error } = await supabaseClient.from('memories').insert([{ 
-            message, 
-            lat: selectedCoords.lat, 
-            lng: selectedCoords.lng, 
-            color_class: 'color-purple' 
+            message, lat: selectedCoords.lat, lng: selectedCoords.lng 
         }]).select();
-
         if (!error) { 
             renderMemoryMarker(data[0]); 
             document.getElementById('input-container').classList.add('hidden'); 
             document.getElementById('memory-input').value = "";
         }
     }
-});
+};
 
 document.getElementById('cancel-btn').onclick = () => document.getElementById('input-container').classList.add('hidden');
 
