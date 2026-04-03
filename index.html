@@ -6,7 +6,7 @@
     <title>Map of Memories</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,10 +14,12 @@
 
     <div class="top-bar">
         <h1 class="logo">Map of Memories</h1>
-        <div class="nav-buttons">
-            <button id="how-btn" class="nav-link">How it works</button>
-            <button id="suggestion-toggle" class="nav-link">Feedback</button>
-        </div>
+        <p class="tagline">A GLOWING TRIBUTE TO THE PLACES WE'VE BEEN.</p>
+    </div>
+
+    <div class="bottom-controls">
+        <button id="how-btn" class="nav-link"><span>📖</span> How it works</button>
+        <button id="suggestion-toggle" class="nav-link"><span>💡</span> Suggestions</button>
     </div>
 
     <div id="how-box" class="modal hidden">
@@ -30,7 +32,7 @@
 
     <div id="suggestion-box" class="modal hidden">
         <div class="glass-card">
-            <h3>Feedback</h3>
+            <h3>Suggestions</h3>
             <textarea id="suggestion-input" placeholder="Have an idea to make this map better?"></textarea>
             <div class="btn-group">
                 <button id="send-suggestion">Send</button>
