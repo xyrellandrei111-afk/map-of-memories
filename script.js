@@ -1,128 +1,35 @@
-// --- CONFIGURATION ---
-const SUPABASE_URL = 'https://ysiminimhqyirufvlkvk.supabase.co'; 
-const SUPABASE_KEY = 'sb_publishable_Pf2W5TClCGKBoFQKGOrW7Q_5rw_J0sP'; 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); 
+body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; font-family: 'Inter', sans-serif; background: #000; }
 
-const map = L.map('map', { zoomControl: false }).setView([16.15, 120.40], 13);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+/* --- UI Elements --- */
+.top-bar { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; text-align: center; width: 90%; pointer-events: none; }
+.logo { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; margin: 0; font-weight: 600; pointer-events: auto; }
+#user-controls { pointer-events: auto; margin-top: 10px; }
 
-// --- SEARCH CONTROL ---
-L.Control.geocoder({
-    geocoder: L.Control.Geocoder.nominatim(),
-    defaultMarkGeocode: false,
-    placeholder: "Search for a place..."
-})
-.on('markgeocode', (e) => map.setView(e.geocode.center, 14))
-.addTo(map);
+/* --- Glassmorphism Modals --- */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+.hidden { display: none; }
+.glass-card { background: rgba(25, 25, 25, 0.85); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; width: 320px; color: white; text-align: center; }
 
-let selectedCoords = null;
-
-// --- LOAD DATA FROM SUPABASE ---
-async function loadMemories() {
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    
-    const { data, error } = await supabaseClient
-        .from('memories')
-        .select('*')
-        .gt('created_at', yesterday);
-
-    if (!error) data.forEach(mem => renderMemoryMarker(mem));
+/* --- High-End Wide Popups --- */
+.leaflet-popup-content-wrapper {
+    background: rgba(15, 15, 15, 0.9) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px !important;
+    width: 320px !important; /* WIDER */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
+.leaflet-popup-content { margin: 20px !important; width: 280px !important; color: white !important; }
+.memory-note { font-size: 18px; font-weight: 600; color: #fff300; line-height: 1.4; margin-bottom: 15px; }
 
-function renderMemoryMarker(mem) {
-    const glowIcon = L.divIcon({ 
-        className: 'custom-icon', 
-        html: `<div class="light-icon ${mem.color_class}"></div>`, 
-        iconSize: [12, 12] 
-    });
+/* --- Reactions & Comments --- */
+.reaction-row { display: flex; gap: 10px; margin-bottom: 15px; }
+.reaction-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 8px 12px; border-radius: 12px; cursor: pointer; transition: 0.3s; }
+.reaction-btn:hover { background: rgba(255,255,255,0.2); }
 
-    const popupHTML = `
-        <div class="memory-card">
-            <div class="memory-note" style="color: #fff300; font-size: 15px; margin-bottom: 10px; font-weight: bold;">
-                "${mem.message}"
-            </div>
-            
-            <div class="reaction-row">
-                <button class="reaction-btn" onclick="updateReact('${mem.id}', 'hug')">🫂 <span id="hug-${mem.id}">${mem.hug_count}</span></button>
-                <button class="reaction-btn" onclick="updateReact('${mem.id}', 'purpleheart')">💜 <span id="purpleheart-${mem.id}">${mem.purpleheart_count}</span></button>
-                <button class="reaction-btn" onclick="updateReact('${mem.id}', 'like')">👍 <span id="like-${mem.id}">${mem.like_count}</span></button>
-            </div>
+.comment-item { font-size: 12px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; margin-bottom: 5px; border-left: 3px solid #ff00ff; text-align: left; }
 
-            <div class="comment-section">
-                <p style="font-size: 10px; opacity: 0.6; margin: 12px 0 6px 0; letter-spacing: 1px;">COMMUNITY THOUGHTS</p>
-                <div class="comment-list" id="comments-${mem.id}">
-                    <div class="comment-item">Magical memory! ✨</div>
-                </div>
-            </div>
-
-            <div class="comment-input-row">
-                <input type="text" id="input-${mem.id}" class="comment-input" placeholder="Leave a comment...">
-                <button onclick="submitComment('${mem.id}')" class="comment-submit">➔</button>
-            </div>
-        </div>`;
-
-    L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
-}
-
-// --- COMMENT LOGIC ---
-window.submitComment = (id) => {
-    const input = document.getElementById(`input-${id}`);
-    const list = document.getElementById(`comments-${id}`);
-    
-    if (input.value.trim() !== "") {
-        const div = document.createElement('div');
-        div.className = 'comment-item';
-        div.innerText = input.value;
-        list.appendChild(div);
-        input.value = ""; // Clear input
-        list.scrollTop = list.scrollHeight; // Auto-scroll to bottom
-    }
-};
-
-// --- SAVE TO SUPABASE ---
-document.getElementById('send-btn').addEventListener('click', async () => {
-    const message = document.getElementById('memory-input').value;
-    if (message && selectedCoords) {
-        const colors = ['color-yellow', 'color-pink', 'color-purple', 'color-white', 'color-blue'];
-        const color_class = colors[Math.floor(Math.random() * colors.length)];
-
-        const { data, error } = await supabaseClient
-            .from('memories')
-            .insert([{ message, lat: selectedCoords.lat, lng: selectedCoords.lng, color_class }])
-            .select();
-
-        if (!error) {
-            renderMemoryMarker(data[0]);
-            document.getElementById('input-container').classList.add('hidden');
-            document.getElementById('memory-input').value = "";
-        }
-    }
-});
-
-// --- UPDATE REACTIONS ---
-window.updateReact = async (id, type) => {
-    const el = document.getElementById(`${type}-${id}`);
-    const currentCount = parseInt(el.innerText);
-    const columnName = `${type}_count`; 
-
-    const { error } = await supabaseClient
-        .from('memories')
-        .update({ [columnName]: currentCount + 1 })
-        .eq('id', id);
-
-    if (!error) el.innerText = currentCount + 1;
-};
-
-// --- UI LOGIC ---
-map.on('click', (e) => {
-    selectedCoords = e.latlng;
-    document.getElementById('input-container').classList.remove('hidden');
-});
-
-document.getElementById('cancel-btn').addEventListener('click', () => document.getElementById('input-container').classList.add('hidden'));
-document.getElementById('how-btn').addEventListener('click', () => document.getElementById('how-box').classList.toggle('hidden'));
-document.getElementById('close-how').addEventListener('click', () => document.getElementById('how-box').classList.add('hidden'));
-document.getElementById('suggestion-toggle').addEventListener('click', () => document.getElementById('suggestion-box').classList.toggle('hidden'));
-document.getElementById('close-suggestion').addEventListener('click', () => document.getElementById('suggestion-box').classList.add('hidden'));
-
-loadMemories();
+/* --- Buttons --- */
+button { background: #ff00ff; color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+.secondary-btn { background: rgba(255,255,255,0.1); margin-left: 10px; }
+input, textarea { width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: white; padding: 10px; margin: 10px 0; box-sizing: border-box; }
