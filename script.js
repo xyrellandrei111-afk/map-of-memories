@@ -12,7 +12,6 @@ const toggleModal = (id, show) => {
     if(el) show ? el.classList.remove('hidden') : el.classList.add('hidden');
 };
 
-// Function to pick a random glow theme
 const getRandomColor = () => {
     const colors = ['glow-purple', 'glow-white', 'glow-yellow', 'glow-pink'];
     return colors[Math.floor(Math.random() * colors.length)];
@@ -29,7 +28,7 @@ async function loadMemories() {
 }
 
 function renderMemoryMarker(mem) {
-    const colorClass = mem.color_class || 'glow-purple'; 
+    const colorClass = mem.color_class || 'glow-purple';
     
     const glowIcon = L.divIcon({ 
         className: 'custom-icon', 
@@ -37,7 +36,6 @@ function renderMemoryMarker(mem) {
         iconSize: [14, 14] 
     });
 
-    // FIXED: Added the 'like' button to the popup display
     const popupHTML = `
         <div class="memory-card">
             <div class="memory-note">"${mem.message}"</div>
@@ -65,14 +63,14 @@ map.on('click', (e) => {
 
 document.getElementById('send-btn').onclick = async () => {
     const message = document.getElementById('memory-input').value;
-    const assignedColor = getRandomColor(); 
+    const assignedColor = getRandomColor();
 
     if (message && selectedCoords) {
         const { data, error } = await supabaseClient.from('memories').insert([{ 
             message: message, 
             lat: selectedCoords.lat, 
             lng: selectedCoords.lng,
-            color_class: assignedColor, 
+            color_class: assignedColor,
             hug_count: 0,
             purpleheart_count: 0,
             like_count: 0 
