@@ -40,13 +40,6 @@ textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rg
 /* Navigation */
 .bottom-controls { position: absolute; bottom: 25px; right: 25px; z-index: 1000; display: flex; gap: 10px; }
 .nav-link { background: rgba(30, 30, 30, 0.9) !important; color: white; border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 50px; cursor: pointer; font-size: 12px; backdrop-filter: blur(5px); }
-
-/* Glow Colors */
-.light-icon { width: 12px; height: 12px; border-radius: 50%; border: 1px solid white; }
-.glow-purple { background: #bf5eff; box-shadow: 0 0 15px #bf5eff; }
-.glow-white { background: #ffffff; box-shadow: 0 0 15px #ffffff; }
-.glow-yellow { background: #ffea00; box-shadow: 0 0 15px #ffea00; }
-.glow-pink { background: #ff5eb1; box-shadow: 0 0 15px #ff5eb1; }
 /* Delete Button Styling */
 .delete-btn {
     background: none;
@@ -68,4 +61,10 @@ textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rg
     font-size: 12px;
     color: #666;
 }
+/* Glow Colors */
+.light-icon { width: 12px; height: 12px; border-radius: 50%; border: 1px solid white; }
+.glow-purple { background: #bf5eff; box-shadow: 0 0 15px #bf5eff; }
+.glow-white { background: #ffffff; box-shadow: 0 0 15px #ffffff; }
+.glow-yellow { background: #ffea00; box-shadow: 0 0 15px #ffea00; }
+.glow-pink { background: #ff5eb1; box-shadow: 0 0 15px #ff5eb1; }
 
