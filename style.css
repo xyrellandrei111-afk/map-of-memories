@@ -233,3 +233,61 @@ body, html {
 .color-purple { color: #bf00ff; background: #bf00ff; }
 .color-white { color: #ffffff; background: #ffffff; }
 .color-blue { color: #00d4ff; background: #00d4ff; }
+/* --- Leaflet Popup Styling --- */
+.leaflet-popup-content-wrapper {
+    background: rgba(25, 25, 25, 0.8) !important;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px !important;
+    color: white !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.leaflet-popup-tip { background: rgba(25, 25, 25, 0.8) !important; }
+
+/* --- Comments UI --- */
+.comment-list {
+    max-height: 100px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.comment-item {
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 10px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    border-left: 3px solid #99048f;
+    animation: fadeIn 0.3s ease;
+}
+
+.comment-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.comment-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    padding: 6px 10px;
+    font-size: 12px;
+    outline: none;
+}
+
+.comment-submit {
+    background: #99048f;
+    border: none;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
