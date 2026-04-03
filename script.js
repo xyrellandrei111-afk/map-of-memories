@@ -7,11 +7,16 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').add
 
 let selectedCoords = null;
 
-// --- UI TOGGLES ---
-document.getElementById('how-btn').onclick = () => document.getElementById('how-box').classList.remove('hidden');
-document.getElementById('close-how').onclick = () => document.getElementById('how-box').classList.add('hidden');
-document.getElementById('suggestion-toggle').onclick = () => document.getElementById('suggestion-box').classList.remove('hidden');
-document.getElementById('close-suggestion').onclick = () => document.getElementById('suggestion-box').classList.add('hidden');
+// --- MODAL TOGGLES ---
+const toggleModal = (id, show) => {
+    const el = document.getElementById(id);
+    show ? el.classList.remove('hidden') : el.classList.add('hidden');
+};
+
+document.getElementById('how-btn').onclick = () => toggleModal('how-box', true);
+document.getElementById('close-how').onclick = () => toggleModal('how-box', false);
+document.getElementById('suggestion-toggle').onclick = () => toggleModal('suggestion-box', true);
+document.getElementById('close-suggestion').onclick = () => toggleModal('suggestion-box', false);
 
 // --- LOAD DATA ---
 async function loadMemories() {
@@ -23,7 +28,7 @@ function renderMemoryMarker(mem) {
     const glowIcon = L.divIcon({ 
         className: 'custom-icon', 
         html: `<div class="light-icon"></div>`, 
-        iconSize: [12, 12] 
+        iconSize: [14, 14] 
     });
 
     const popupHTML = `
@@ -46,10 +51,10 @@ window.updateReact = async (id, type) => {
     if (!error) el.innerText = count + 1;
 };
 
-// --- INTERACTION ---
+// --- POSTING ---
 map.on('click', (e) => {
     selectedCoords = e.latlng;
-    document.getElementById('input-container').classList.remove('hidden');
+    toggleModal('input-container', true);
 });
 
 document.getElementById('send-btn').onclick = async () => {
@@ -60,12 +65,12 @@ document.getElementById('send-btn').onclick = async () => {
         }]).select();
         if (!error) { 
             renderMemoryMarker(data[0]); 
-            document.getElementById('input-container').classList.add('hidden'); 
+            toggleModal('input-container', false);
             document.getElementById('memory-input').value = "";
         }
     }
 };
 
-document.getElementById('cancel-btn').onclick = () => document.getElementById('input-container').classList.add('hidden');
+document.getElementById('cancel-btn').onclick = () => toggleModal('input-container', false);
 
 loadMemories();
