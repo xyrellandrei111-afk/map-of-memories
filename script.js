@@ -56,10 +56,19 @@ map.on('click', (e) => {
 document.getElementById('send-btn').onclick = async () => {
     const message = document.getElementById('memory-input').value;
     if (message && selectedCoords) {
+        // We include default counts here just in case the database isn't setting them
         const { data, error } = await supabaseClient.from('memories').insert([{ 
-            message, lat: selectedCoords.lat, lng: selectedCoords.lng 
+            message: message, 
+            lat: selectedCoords.lat, 
+            lng: selectedCoords.lng,
+            hug_count: 0,
+            purpleheart_count: 0
         }]).select();
-        if (!error) { 
+        
+        if (error) {
+            console.error("Post Error:", error.message);
+            alert("Could not post: " + error.message);
+        } else { 
             renderMemoryMarker(data[0]); 
             toggleModal('input-container', false);
             document.getElementById('memory-input').value = "";
