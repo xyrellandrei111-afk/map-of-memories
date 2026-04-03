@@ -5,18 +5,23 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const map = L.map('map', { zoomControl: false }).setView([16.15, 120.40], 13);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
 
-// Search Bar Setup
-const geocoder = L.Control.geocoder({
-    defaultMarkGeocode: false,
-    placeholder: "Find a place...",
-}).on('markgeocode', function(e) {
-    selectedCoords = e.geocode.center;
-    map.setView(selectedCoords, 16);
-    toggleModal('input-container', true);
-});
-document.getElementById('search-container').appendChild(geocoder.onAdd(map));
-
 let selectedCoords = null;
+
+// Fix: Wrap in DOMContentLoaded to prevent "appendChild" null error
+document.addEventListener('DOMContentLoaded', () => {
+    const searchContainer = document.getElementById('search-container');
+    if (searchContainer) {
+        const geocoder = L.Control.geocoder({
+            defaultMarkGeocode: false,
+            placeholder: "Search location...",
+        }).on('markgeocode', function(e) {
+            selectedCoords = e.geocode.center;
+            map.setView(selectedCoords, 16);
+            toggleModal('input-container', true);
+        });
+        searchContainer.appendChild(geocoder.onAdd(map));
+    }
+});
 
 const toggleModal = (id, show) => {
     const el = document.getElementById(id);
@@ -28,14 +33,12 @@ const getRandomColor = () => {
     return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// --- NEW: DELETE FUNCTION ---
+// --- DELETE LOGIC ---
 window.deleteGlow = async (id) => {
-    if (confirm("Delete this memory forever?")) {
+    if (confirm("Permanently delete your memory?")) {
         const { error } = await supabaseClient.from('memories').delete().eq('id', id);
         if (!error) {
-            location.reload(); // Refresh to remove the marker
-        } else {
-            alert("Error deleting: " + error.message);
+            location.reload(); 
         }
     }
 };
@@ -48,26 +51,24 @@ function renderMemoryMarker(mem) {
         iconSize: [12, 12] 
     });
 
-    // Check if this ID exists in user's local history to show Delete button
+    // Check if user owns this glow via localStorage
     const myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
     const isMine = myGlows.includes(mem.id);
 
     const popupHTML = `
-        <div style="color:#222; text-align:center; min-width:160px; padding:5px;">
-            <p style="margin:0 0 10px 0; font-size:14px;"><b>"${mem.message}"</b></p>
+        <div style="color:#222; text-align:center; min-width:140px;">
+            <p><b>"${mem.message}"</b></p>
             <div style="display:flex; justify-content:space-around; font-size:12px; border-top:1px solid #eee; padding-top:8px;">
                 <span>🫂 ${mem.hug_count || 0}</span>
                 <span>💜 ${mem.purpleheart_count || 0}</span>
                 <span>👍 ${mem.like_count || 0}</span>
             </div>
-            ${isMine ? `<button class="delete-btn" onclick="deleteGlow('${mem.id}')">Remove my glow</button>` : ''}
-            <div class="popup-footer">Click to react or share warmth</div>
+            ${isMine ? `<button class="delete-btn" onclick="deleteGlow('${mem.id}')">Delete my glow</button>` : ''}
         </div>`;
 
     L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
 }
 
-// Map Click Logic
 map.on('click', (e) => {
     selectedCoords = e.latlng;
     toggleModal('input-container', true);
@@ -77,17 +78,12 @@ document.getElementById('send-btn').onclick = async () => {
     const msg = document.getElementById('memory-input').value;
     if (msg && selectedCoords) {
         const { data, error } = await supabaseClient.from('memories').insert([{ 
-            message: msg, 
-            lat: selectedCoords.lat, 
-            lng: selectedCoords.lng,
-            color_class: getRandomColor(), 
-            hug_count: 0, 
-            purpleheart_count: 0, 
-            like_count: 0 
+            message: msg, lat: selectedCoords.lat, lng: selectedCoords.lng,
+            color_class: getRandomColor(), hug_count: 0, purpleheart_count: 0, like_count: 0 
         }]).select();
         
         if(!error) { 
-            // Save ID to local storage so the user can delete it later
+            // Store ID locally so user can delete it
             const myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
             myGlows.push(data[0].id);
             localStorage.setItem('my_glows', JSON.stringify(myGlows));
@@ -99,7 +95,6 @@ document.getElementById('send-btn').onclick = async () => {
     }
 };
 
-// Modal Controls
 document.getElementById('how-btn').onclick = () => toggleModal('how-box', true);
 document.getElementById('close-how').onclick = () => toggleModal('how-box', false);
 document.getElementById('suggestion-toggle').onclick = () => toggleModal('suggestion-box', true);
@@ -110,5 +105,4 @@ async function loadMemories() {
     const { data, error } = await supabaseClient.from('memories').select('*');
     if (!error) data.forEach(mem => renderMemoryMarker(mem));
 }
-
 loadMemories();
