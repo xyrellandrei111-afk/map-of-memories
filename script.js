@@ -7,31 +7,49 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').add
 
 let selectedCoords = null;
 
+// --- UI HELPERS ---
+const toggleModal = (id, show) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (show) {
+        el.classList.remove('hidden');
+        el.style.display = 'flex'; 
+    } else {
+        el.classList.add('hidden');
+        el.style.display = 'none';
+    }
+};
+
 // Search Setup
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('search-container');
     if (container) {
         const geocoder = L.Control.geocoder({ defaultMarkGeocode: false, placeholder: "Search a place..." })
-            .on('markgeocode', e => { selectedCoords = e.geocode.center; map.setView(selectedCoords, 16); toggleModal('input-container', true); });
+            .on('markgeocode', e => { 
+                selectedCoords = e.geocode.center; 
+                map.setView(selectedCoords, 16); 
+                toggleModal('input-container', true); 
+            });
         container.appendChild(geocoder.onAdd(map));
     }
 });
 
-const toggleModal = (id, show) => {
-    const el = document.getElementById(id);
-    if(el) show ? el.classList.remove('hidden') : el.classList.add('hidden');
-};
-
 // --- CORE FUNCTIONS ---
 window.addComment = async (id) => {
     const input = document.getElementById(`comment-in-${id}`);
-    if (!input.value.trim()) return;
-    const { error } = await supabaseClient.from('comments').insert([{ memory_id: id, content: input.value }]);
-    if (!error) loadMemories();
+    const text = input.value.trim();
+    if (!text) return;
+
+    const { error } = await supabaseClient.from('comments').insert([{ memory_id: id, content: text }]);
+    if (!error) {
+        input.value = ''; // Clear input after success
+        loadMemories();
+    }
 };
 
 window.reactToGlow = async (id, type, count) => {
-    const update = {}; update[type] = count + 1;
+    const update = {}; 
+    update[type] = (count || 0) + 1;
     await supabaseClient.from('memories').update(update).eq('id', id);
     loadMemories();
 };
@@ -41,17 +59,19 @@ window.deleteGlow = async (id) => {
         await supabaseClient.from('memories').delete().eq('id', id);
         let myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
         localStorage.setItem('my_glows', JSON.stringify(myGlows.filter(g => g !== id)));
-        location.reload();
+        loadMemories(); // Refresh map without full reload
     }
 };
 
 async function renderMemoryMarker(mem) {
-    const glowIcon = L.divIcon({ className: 'custom-icon', html: `<div class="light-icon ${mem.color_class || 'glow-purple'}"></div>`, iconSize: [12, 12] });
+    const glowIcon = L.divIcon({ 
+        className: 'custom-icon', 
+        html: `<div class="light-icon ${mem.color_class || 'glow-purple'}"></div>`, 
+        iconSize: [12, 12] 
+    });
 
-    // Fetch Replies
     const { data: comments } = await supabaseClient.from('comments').select('content').eq('memory_id', mem.id);
     const commentHTML = (comments || []).map(c => `<div class="comment-item">✨ ${c.content}</div>`).join('');
-
     const isMine = JSON.parse(localStorage.getItem('my_glows') || "[]").includes(mem.id);
 
     const popupHTML = `
@@ -73,25 +93,40 @@ async function renderMemoryMarker(mem) {
     L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
 }
 
-// User Actions
-map.on('click', e => { selectedCoords = e.latlng; toggleModal('input-container', true); });
+// --- EVENT LISTENERS ---
+map.on('click', e => { 
+    selectedCoords = e.latlng; 
+    toggleModal('input-container', true); 
+});
 
 document.getElementById('send-btn').onclick = async () => {
-    const msg = document.getElementById('memory-input').value;
+    const inputEl = document.getElementById('memory-input');
+    const msg = inputEl.value.trim();
     if (!msg || !selectedCoords) return;
+
     const { data, error } = await supabaseClient.from('memories').insert([{ 
-        message: msg, lat: selectedCoords.lat, lng: selectedCoords.lng,
+        message: msg, 
+        lat: selectedCoords.lat, 
+        lng: selectedCoords.lng,
         color_class: Math.random() > 0.5 ? 'glow-purple' : 'glow-pink',
-        hug_count: 0, purpleheart_count: 0, like_count: 0 
+        hug_count: 0, 
+        purpleheart_count: 0, 
+        like_count: 0 
     }]).select();
     
     if(!error) { 
         let myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
         myGlows.push(data[0].id);
         localStorage.setItem('my_glows', JSON.stringify(myGlows));
-        location.reload(); 
+        inputEl.value = ''; // Reset input
+        toggleModal('input-container', false);
+        loadMemories(); 
     }
 };
+
+// Suggestion Toggle Logic
+document.getElementById('suggestion-toggle').onclick = () => toggleModal('suggestion-box', true);
+document.getElementById('close-suggestion').onclick = () => toggleModal('suggestion-box', false);
 
 document.getElementById('how-btn').onclick = () => toggleModal('how-box', true);
 document.getElementById('close-how').onclick = () => toggleModal('how-box', false);
@@ -102,4 +137,5 @@ async function loadMemories() {
     const { data } = await supabaseClient.from('memories').select('*');
     if (data) data.forEach(m => renderMemoryMarker(m));
 }
+
 loadMemories();
