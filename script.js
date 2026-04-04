@@ -34,7 +34,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// --- CORE FUNCTIONS ---
+// --- FEEDBACK SYSTEM ---
+window.submitFeedback = async () => {
+    const input = document.getElementById('feedback-input');
+    const ideaText = input.value.trim();
+    if (!ideaText) return;
+
+    const { error } = await supabaseClient.from('feedback').insert([{ idea: ideaText }]);
+    if (!error) {
+        input.value = ''; 
+        loadFeedback(); // Refresh the list immediately
+    }
+};
+
+async function loadFeedback() {
+    const listEl = document.getElementById('feedback-list');
+    if (!listEl) return;
+
+    const { data, error } = await supabaseClient
+        .from('feedback')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (!error && data) {
+        listEl.innerHTML = data.map(item => `
+            <div class="suggestion-item">
+                <span style="color: #ff5eb1;">💡</span> ${item.idea}
+            </div>
+        `).join('');
+    }
+}
+
+// --- CORE MEMORY FUNCTIONS ---
 window.addComment = async (id) => {
     const input = document.getElementById(`comment-in-${id}`);
     const text = input.value.trim();
@@ -42,7 +73,7 @@ window.addComment = async (id) => {
 
     const { error } = await supabaseClient.from('comments').insert([{ memory_id: id, content: text }]);
     if (!error) {
-        input.value = ''; // Clear input after success
+        input.value = ''; 
         loadMemories();
     }
 };
@@ -59,7 +90,7 @@ window.deleteGlow = async (id) => {
         await supabaseClient.from('memories').delete().eq('id', id);
         let myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
         localStorage.setItem('my_glows', JSON.stringify(myGlows.filter(g => g !== id)));
-        loadMemories(); // Refresh map without full reload
+        loadMemories();
     }
 };
 
@@ -118,16 +149,19 @@ document.getElementById('send-btn').onclick = async () => {
         let myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
         myGlows.push(data[0].id);
         localStorage.setItem('my_glows', JSON.stringify(myGlows));
-        inputEl.value = ''; // Reset input
+        inputEl.value = ''; 
         toggleModal('input-container', false);
         loadMemories(); 
     }
 };
 
-// Suggestion Toggle Logic
-document.getElementById('suggestion-toggle').onclick = () => toggleModal('suggestion-box', true);
-document.getElementById('close-suggestion').onclick = () => toggleModal('suggestion-box', false);
+// Toggle for Suggestions/Feedback
+document.getElementById('suggestion-toggle').onclick = () => {
+    toggleModal('suggestion-box', true);
+    loadFeedback(); // Fetch community ideas when opened
+};
 
+document.getElementById('close-suggestion').onclick = () => toggleModal('suggestion-box', false);
 document.getElementById('how-btn').onclick = () => toggleModal('how-box', true);
 document.getElementById('close-how').onclick = () => toggleModal('how-box', false);
 document.getElementById('cancel-btn').onclick = () => toggleModal('input-container', false);
