@@ -45,11 +45,20 @@
         </div>
     </div>
 <div id="suggestion-box" class="modal hidden">
-    <div class="glass-card">
-        <h3 class="glow-title">Memory Inspirations</h3>
-        <div class="suggestion-item">✨ "The corner where we first met..."</div>
-        <div class="suggestion-item">🌙 "Late night coffee and rainy talks."</div>
-        <div class="suggestion-item">🎒 "Our old high school secret spot."</div>
+    <div class="glass-card" style="width: 350px;">
+        <h3 class="glow-title">Feedback Hub</h3>
+        <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 15px;">
+            Have an idea to improve the Map of Memories? Share it below!
+        </p>
+        
+        <div class="comment-input-group" style="margin-bottom: 20px;">
+            <input type="text" id="feedback-input" placeholder="I suggest adding...">
+            <button class="comment-btn" onclick="submitFeedback()">Send</button>
+        </div>
+
+        <div id="feedback-list" class="suggestion-list" style="max-height: 200px; overflow-y: auto;">
+            </div>
+
         <button id="close-suggestion" class="main-btn">Close</button>
     </div>
 </div>
