@@ -191,7 +191,12 @@ textarea#memory-input:focus, #feedback-input:focus {
 }
 
 /* Markers & Controls */
-.light-icon { width: 12px; height: 12px; border-radius: 50%; border: 1px solid white; box-shadow: 0 0 15px currentColor; }
+.light-icon { width: 14px; height: 14px; border-radius: 50%; border: 1px solid white; box-shadow: 0 0 20px 6px currentColor;
+             animation: pulse 2s infinite; }
+@keyframes pulse { 
+    0%, 100% { transform: scale(1); opacity: 0.8; filter: brightness(1); } 
+    50% { transform: scale(1.4); opacity: 1; filter: brightness(1.3); } 
+}
 .glow-purple { color: #bf5eff; background: #bf5eff; }
 .glow-pink { color: #ff5eb1; background: #ff5eb1; }
 
