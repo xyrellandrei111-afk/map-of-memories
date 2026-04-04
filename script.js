@@ -7,13 +7,13 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').add
 
 let selectedCoords = null;
 
-// Initialize Search Bar
+// Search Bar Logic
 document.addEventListener('DOMContentLoaded', () => {
     const searchContainer = document.getElementById('search-container');
     if (searchContainer) {
         const geocoder = L.Control.geocoder({
             defaultMarkGeocode: false,
-            placeholder: "Search..."
+            placeholder: "Search location..."
         }).on('markgeocode', function(e) {
             selectedCoords = e.geocode.center;
             map.setView(selectedCoords, 16);
@@ -33,23 +33,31 @@ const getRandomColor = () => {
     return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// Global Delete Function
-// IMPROVED DELETE: Cleans database and local memory
+// --- NEW: REACTION LOGIC ---
+window.reactToGlow = async (id, type, currentCount) => {
+    const updateData = {};
+    updateData[type] = currentCount + 1;
+
+    const { error } = await supabaseClient
+        .from('memories')
+        .update(updateData)
+        .eq('id', id);
+
+    if (!error) {
+        // Refresh markers to show new counts
+        loadMemories(); 
+    }
+};
+
+// --- DELETE LOGIC ---
 window.deleteGlow = async (id) => {
     if (confirm("Delete this memory forever?")) {
-        // 1. Remove from Supabase
         const { error } = await supabaseClient.from('memories').delete().eq('id', id);
-        
         if (!error) {
-            // 2. Remove from your local "my_glows" list so the button disappears
             let myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
-            myGlows = myGlows.filter(glowId => glowId !== id);
+            myGlows = myGlows.filter(g => g !== id);
             localStorage.setItem('my_glows', JSON.stringify(myGlows));
-
-            // 3. Force a full refresh to clear the map markers
-            window.location.href = window.location.pathname + '?' + new Date().getTime();
-        } else {
-            alert("Delete failed: " + error.message);
+            location.reload();
         }
     }
 };
@@ -65,54 +73,45 @@ function renderMemoryMarker(mem) {
     const myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
     const isMine = myGlows.includes(mem.id);
 
+    // Buttons now have onclick events to trigger the reactions
     const popupHTML = `
-        <div style="color:#222; text-align:center; min-width:140px;">
+        <div style="color:#222; text-align:center; min-width:150px;">
             <p style="margin:0 0 10px 0; font-family:sans-serif;"><b>"${mem.message}"</b></p>
-            <div style="display:flex; justify-content:space-around; font-size:12px; border-top:1px solid #eee; padding-top:8px;">
-                <span>🫂 ${mem.hug_count || 0}</span>
-                <span>💜 ${mem.purpleheart_count || 0}</span>
-                <span>👍 ${mem.like_count || 0}</span>
+            <div style="display:flex; justify-content:space-around; font-size:14px; border-top:1px solid #eee; padding-top:8px;">
+                <span style="cursor:pointer" onclick="reactToGlow('${mem.id}', 'hug_count', ${mem.hug_count || 0})">🫂 ${mem.hug_count || 0}</span>
+                <span style="cursor:pointer" onclick="reactToGlow('${mem.id}', 'purpleheart_count', ${mem.purpleheart_count || 0})">💜 ${mem.purpleheart_count || 0}</span>
+                <span style="cursor:pointer" onclick="reactToGlow('${mem.id}', 'like_count', ${mem.like_count || 0})">👍 ${mem.like_count || 0}</span>
             </div>
             ${isMine ? `<button class="delete-btn" onclick="deleteGlow('${mem.id}')">Delete my glow</button>` : ''}
         </div>`;
 
-    // Add the marker to the map
-    const marker = L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
+    L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
 }
+
 map.on('click', (e) => {
     selectedCoords = e.latlng;
     toggleModal('input-container', true);
 });
 
-// Post Glow (Fixes null column errors)
 document.getElementById('send-btn').onclick = async () => {
     const msg = document.getElementById('memory-input').value;
     if (msg && selectedCoords) {
         const { data, error } = await supabaseClient.from('memories').insert([{ 
-            message: msg, 
-            lat: selectedCoords.lat, 
-            lng: selectedCoords.lng,
-            color_class: getRandomColor(),
-            hug_count: 0,
-            purpleheart_count: 0,
-            like_count: 0 
+            message: msg, lat: selectedCoords.lat, lng: selectedCoords.lng,
+            color_class: getRandomColor(), hug_count: 0, purpleheart_count: 0, like_count: 0 
         }]).select();
         
         if(!error) { 
             const myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
             myGlows.push(data[0].id);
             localStorage.setItem('my_glows', JSON.stringify(myGlows));
-
             renderMemoryMarker(data[0]); 
             toggleModal('input-container', false); 
             document.getElementById('memory-input').value = ""; 
-        } else {
-            alert("Error: " + error.message);
         }
     }
 };
 
-// UI Handlers
 document.getElementById('how-btn').onclick = () => toggleModal('how-box', true);
 document.getElementById('close-how').onclick = () => toggleModal('how-box', false);
 document.getElementById('suggestion-toggle').onclick = () => toggleModal('suggestion-box', true);
@@ -120,6 +119,8 @@ document.getElementById('close-suggestion').onclick = () => toggleModal('suggest
 document.getElementById('cancel-btn').onclick = () => toggleModal('input-container', false);
 
 async function loadMemories() {
+    // Clear existing markers before reloading to prevent duplicates
+    map.eachLayer((layer) => { if (layer instanceof L.Marker) map.removeLayer(layer); });
     const { data, error } = await supabaseClient.from('memories').select('*');
     if (!error) data.forEach(mem => renderMemoryMarker(mem));
 }
