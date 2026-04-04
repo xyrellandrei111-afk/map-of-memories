@@ -7,10 +7,10 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').add
 
 let selectedCoords = null;
 
-// Search Bar Logic
+// Initialize Search Bar
 document.addEventListener('DOMContentLoaded', () => {
-    const searchContainer = document.getElementById('search-container');
-    if (searchContainer) {
+    const container = document.getElementById('search-container');
+    if (container) {
         const geocoder = L.Control.geocoder({
             defaultMarkGeocode: false,
             placeholder: "Search location..."
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
             map.setView(selectedCoords, 16);
             toggleModal('input-container', true);
         });
-        searchContainer.appendChild(geocoder.onAdd(map));
+        container.appendChild(geocoder.onAdd(map));
     }
 });
 
@@ -33,20 +33,12 @@ const getRandomColor = () => {
     return colors[Math.floor(Math.random() * colors.length)];
 };
 
-// --- NEW: REACTION LOGIC ---
+// --- REACTION LOGIC ---
 window.reactToGlow = async (id, type, currentCount) => {
     const updateData = {};
     updateData[type] = currentCount + 1;
-
-    const { error } = await supabaseClient
-        .from('memories')
-        .update(updateData)
-        .eq('id', id);
-
-    if (!error) {
-        // Refresh markers to show new counts
-        loadMemories(); 
-    }
+    await supabaseClient.from('memories').update(updateData).eq('id', id);
+    loadMemories(); 
 };
 
 // --- DELETE LOGIC ---
@@ -54,9 +46,9 @@ window.deleteGlow = async (id) => {
     if (confirm("Delete this memory forever?")) {
         const { error } = await supabaseClient.from('memories').delete().eq('id', id);
         if (!error) {
+            // Remove from local list so it doesn't ghost
             let myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
-            myGlows = myGlows.filter(g => g !== id);
-            localStorage.setItem('my_glows', JSON.stringify(myGlows));
+            localStorage.setItem('my_glows', JSON.stringify(myGlows.filter(g => g !== id)));
             location.reload();
         }
     }
@@ -73,15 +65,18 @@ function renderMemoryMarker(mem) {
     const myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
     const isMine = myGlows.includes(mem.id);
 
-    // Buttons now have onclick events to trigger the reactions
+    // Added a "Comment" style section for the message
     const popupHTML = `
-        <div style="color:#222; text-align:center; min-width:150px;">
-            <p style="margin:0 0 10px 0; font-family:sans-serif;"><b>"${mem.message}"</b></p>
-            <div style="display:flex; justify-content:space-around; font-size:14px; border-top:1px solid #eee; padding-top:8px;">
+        <div style="color:#222; text-align:center; min-width:160px; font-family: sans-serif;">
+            <div style="font-size: 14px; margin-bottom: 5px;"><b>Memory</b></div>
+            <div class="popup-comment">"${mem.message}"</div>
+            
+            <div style="display:flex; justify-content:space-around; font-size:14px; border-top:1px solid #eee; padding-top:8px; margin-top:8px;">
                 <span style="cursor:pointer" onclick="reactToGlow('${mem.id}', 'hug_count', ${mem.hug_count || 0})">🫂 ${mem.hug_count || 0}</span>
                 <span style="cursor:pointer" onclick="reactToGlow('${mem.id}', 'purpleheart_count', ${mem.purpleheart_count || 0})">💜 ${mem.purpleheart_count || 0}</span>
                 <span style="cursor:pointer" onclick="reactToGlow('${mem.id}', 'like_count', ${mem.like_count || 0})">👍 ${mem.like_count || 0}</span>
             </div>
+            
             ${isMine ? `<button class="delete-btn" onclick="deleteGlow('${mem.id}')">Delete my glow</button>` : ''}
         </div>`;
 
@@ -112,6 +107,7 @@ document.getElementById('send-btn').onclick = async () => {
     }
 };
 
+// UI Handlers
 document.getElementById('how-btn').onclick = () => toggleModal('how-box', true);
 document.getElementById('close-how').onclick = () => toggleModal('how-box', false);
 document.getElementById('suggestion-toggle').onclick = () => toggleModal('suggestion-box', true);
@@ -119,7 +115,6 @@ document.getElementById('close-suggestion').onclick = () => toggleModal('suggest
 document.getElementById('cancel-btn').onclick = () => toggleModal('input-container', false);
 
 async function loadMemories() {
-    // Clear existing markers before reloading to prevent duplicates
     map.eachLayer((layer) => { if (layer instanceof L.Marker) map.removeLayer(layer); });
     const { data, error } = await supabaseClient.from('memories').select('*');
     if (!error) data.forEach(mem => renderMemoryMarker(mem));
