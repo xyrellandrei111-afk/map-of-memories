@@ -7,10 +7,11 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="map"></div>
+    
     <div id="search-container"></div>
 
     <div class="top-bar">
@@ -20,7 +21,7 @@
 
     <div class="bottom-controls">
         <button id="how-btn" class="nav-link"><span>📖</span> How it works</button>
-        <button id="suggestion-toggle" class="nav-link"><span>💡</span> Suggestions</button>
+        <button id="suggestion-toggle" class="nav-link"><span>💡</span> Feedback Hub</button>
     </div>
 
     <div id="input-container" class="modal hidden">
@@ -34,8 +35,8 @@
 
     <div id="how-box" class="modal hidden">
         <div class="glass-card">
-            <h3>How it Works</h3>
-            <p style="font-size: 13px; text-align: left; margin: 20px 0;">
+            <h3 class="glow-title">How it Works</h3>
+            <p style="font-size: 13px; text-align: left; margin: 20px 0; line-height: 1.6;">
                 📍 1. Search or click the map.<br>
                 ✍️ 2. Write your heart out.<br>
                 ✨ 3. Post to leave a glow.<br>
@@ -44,27 +45,30 @@
             <button id="close-how" class="main-btn">Got it</button>
         </div>
     </div>
-<div id="suggestion-box" class="modal hidden">
-    <div class="glass-card" style="width: 350px;">
-        <h3 class="glow-title">Feedback Hub</h3>
-        <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 15px;">
-            Have an idea to improve the Map of Memories? Share it below!
-        </p>
-        
-        <div class="comment-input-group" style="margin-bottom: 20px;">
-            <input type="text" id="feedback-input" placeholder="I suggest adding...">
-            <button class="comment-btn" onclick="submitFeedback()">Send</button>
-        </div>
 
-        <div id="feedback-list" class="suggestion-list" style="max-height: 200px; overflow-y: auto;">
+    <div id="suggestion-box" class="modal hidden">
+        <div class="glass-card" style="width: 350px;">
+            <h3 class="glow-title">Feedback Hub</h3>
+            <p style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 15px;">
+                Have an idea to improve the Map of Memories? Share it below!
+            </p>
+            
+            <div class="comment-input-group" style="margin-bottom: 20px;">
+                <input type="text" id="feedback-input" placeholder="I suggest adding...">
+                <button class="comment-btn" onclick="submitFeedback()">Send</button>
             </div>
 
-        <button id="close-suggestion" class="main-btn">Close</button>
+            <div id="feedback-list" class="suggestion-list" style="max-height: 200px; overflow-y: auto;">
+                </div>
+
+            <button id="close-suggestion" class="main-btn" style="margin-top: 15px;">Close</button>
+        </div>
     </div>
-</div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script src="script.js"></script>
 </body>
 </html>
