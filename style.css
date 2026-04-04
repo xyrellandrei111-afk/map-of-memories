@@ -1,98 +1,38 @@
-body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden; }
-
-/* SEARCH BAR: Short, Transparent, Upper-Left */
-#search-container {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 1100;
-    width: 220px; 
-    pointer-events: auto;
-}
-
-.leaflet-control-geocoder { 
-    width: 100% !important;
-    border-radius: 12px !important; 
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
-}
-.popup-comment {
-    font-size: 11px;
-    color: #555;
-    font-style: italic;
-    margin: 8px 0;
-    line-height: 1.4;
-    border-left: 2px solid #ff5eb1;
-    padding-left: 8px;
-    text-align: left;
-}
-/* Comment Section Layout */
-.comments-list {
-    max-height: 80px;
-    overflow-y: auto;
-    font-size: 11px;
-    text-align: left;
-    margin: 10px 0;
-    border-top: 1px solid #eee;
-    padding-top: 5px;
-}
-.comment-item {
-    padding: 3px 0;
-    border-bottom: 1px solid #fafafa;
-    color: #444;
-}
-.comment-input-group {
-    display: flex;
-    gap: 5px;
-    margin-top: 5px;
-}
-.comment-input-group input {
-    flex: 1;
-    font-size: 11px;
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-.comment-btn {
-    background: #99048f;
-    color: white;
-    border: none;
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-.leaflet-control-geocoder-form input { color: white !important; background: transparent !important; }
-.leaflet-control-geocoder-icon { filter: invert(1); opacity: 0.7; }
+body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; background: #000; overflow: hidden; font-family: 'Inter', sans-serif; }
 
 /* Cinematic Header */
-.top-bar { position: absolute; top: 20px; width: 100%; text-align: center; z-index: 1000; pointer-events: none; }
-.logo { font-family: 'Playfair Display', serif; font-size: 32px; margin: 0; pointer-events: auto; background: linear-gradient(to bottom, #ff5eb1, #99048f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.tagline { color: rgba(255, 255, 255, 0.5); font-size: 9px; letter-spacing: 3px; text-transform: uppercase; margin-top: 5px; }
+.top-bar { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); z-index: 1000; text-align: center; width: 100%; pointer-events: none; }
+.logo { font-family: 'Playfair Display', serif; font-size: 48px; margin: 0; font-weight: 600; pointer-events: auto; background: linear-gradient(to bottom, #ff5eb1, #99048f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(153, 4, 143, 0.4)); }
+.tagline { color: rgba(255, 255, 255, 0.7); font-size: 11px; letter-spacing: 5px; text-transform: uppercase; margin-top: 8px; font-weight: 300; }
 
-/* Modals */
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px); z-index: 5000; display: flex; align-items: center; justify-content: center; }
-.hidden { display: none !important; }
-.glass-card { background: rgba(25, 25, 25, 0.95); border-radius: 24px; padding: 30px; width: 280px; color: white; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+/* Transparent Geocoder (Search Bar) */
+#search-container { position: absolute; top: 120px; left: 50%; transform: translateX(-50%); z-index: 1000; width: 300px; pointer-events: auto; }
+.leaflet-control-geocoder { width: 100% !important; border-radius: 50px !important; background: rgba(20, 20, 20, 0.9) !important; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
+.leaflet-control-geocoder-icon { filter: invert(1); opacity: 0.8; }
+.leaflet-control-geocoder-form input { color: white !important; background: transparent !important; padding: 12px; font-size: 13px; }
 
-/* Forms & Buttons */
-textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; padding: 12px; margin: 15px 0; resize: none; box-sizing: border-box; }
-.main-btn { background: #99048f; color: white; border: none; padding: 10px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: 600; }
-.cancel-link { background: none; border: none; color: rgba(255,255,255,0.4); cursor: pointer; font-size: 11px; margin-top: 10px; }
+/* MODALS: Dark Glassmorphism */
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(20px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease; }
+.hidden { display: none !important; opacity: 0; }
+.glass-card { background: rgba(25, 25, 25, 0.95); border-radius: 28px; padding: 40px; width: 320px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.15); color: white; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
 
-/* Delete Button */
-.delete-btn { background: none; border: none; color: #ff4d4d; font-size: 11px; cursor: pointer; margin-top: 10px; text-decoration: underline; width: 100%; }
+.glow-title { background: linear-gradient(45deg, #ff5eb1, #bf5eff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-weight: 600; font-family: 'Playfair Display', serif; }
+textarea { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: white; padding: 12px; margin: 15px 0; font-family: inherit; font-size: 14px; }
+.main-btn { background: #99048f; color: white; border: none; padding: 12px; border-radius: 12px; width: 100%; cursor: pointer; font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
 
+/* MAP POPUP: Translucent Dark Glass */
+.leaflet-popup-content-wrapper { 
+    background: rgba(15, 15, 15, 0.95) !important; /* Dark Glass */
+    backdrop-filter: blur(15px) !important; 
+    border-radius: 18px !important; 
+    border: 1px solid rgba(255, 255, 255, 0.15) !important; 
+    box-shadow: 0 15px 40px rgba(0,0,0,0.7) !important; 
+    color: white !important; 
 }
-/* Navigation */
-.bottom-controls { position: absolute; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px; }
-.nav-link { background: rgba(30, 30, 30, 0.8) !important; color: white; border: 1px solid rgba(255,255,255,0.1); padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 11px; }
+.leaflet-popup-tip { background: rgba(15, 15, 15, 0.95) !important; border: 1px solid rgba(255, 255, 255, 0.15) !important; border-top: none; }
 
-/* Glows */
-.light-icon { width: 12px; height: 12px; border-radius: 50%; border: 1px solid white; }
-.glow-purple { background: #bf5eff; box-shadow: 0 0 10px #bf5eff; }
-.glow-white { background: #ffffff; box-shadow: 0 0 10px #ffffff; }
-.glow-yellow { background: #ffea00; box-shadow: 0 0 10px #ffea00; }
-.glow-pink { background: #ff5eb1; box-shadow: 0 0 10px #ff5eb1; }
+/* POPUP CONTENT: Aesthetic Highlighting */
+.leaflet-popup-content { margin: 15px !important; line-height: 1.4 !important; }
+
+/* NEW HIGHLIGHTING: Gradient Box with White Text */
+.popup-comment
