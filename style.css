@@ -199,7 +199,9 @@ textarea#memory-input:focus, #feedback-input:focus {
 }
 .glow-purple { color: #bf5eff; background: #bf5eff; }
 .glow-pink { color: #ff5eb1; background: #ff5eb1; }
-
+.glow-yellow { color: #fff300; background: #fff300; }
+.glow-white { color: #ffffff; background: #ffffff; }
+.glow-blue { color: #00d4ff; background: #00d4ff; }
 .bottom-controls { position: absolute; bottom: 25px; right: 25px; z-index: 1000; display: flex; gap: 10px; }
 .nav-link { 
     background: rgba(25, 25, 25, 0.8) !important; 
