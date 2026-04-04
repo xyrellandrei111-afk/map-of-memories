@@ -28,6 +28,42 @@ body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; background:
     padding-left: 8px;
     text-align: left;
 }
+/* Comment Section Layout */
+.comments-list {
+    max-height: 80px;
+    overflow-y: auto;
+    font-size: 11px;
+    text-align: left;
+    margin: 10px 0;
+    border-top: 1px solid #eee;
+    padding-top: 5px;
+}
+.comment-item {
+    padding: 3px 0;
+    border-bottom: 1px solid #fafafa;
+    color: #444;
+}
+.comment-input-group {
+    display: flex;
+    gap: 5px;
+    margin-top: 5px;
+}
+.comment-input-group input {
+    flex: 1;
+    font-size: 11px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.comment-btn {
+    background: #99048f;
+    color: white;
+    border: none;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
 .leaflet-control-geocoder-form input { color: white !important; background: transparent !important; }
 .leaflet-control-geocoder-icon { filter: invert(1); opacity: 0.7; }
 
