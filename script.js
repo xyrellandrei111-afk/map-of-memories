@@ -7,6 +7,14 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').add
 
 let selectedCoords = null;
 
+// --- REACTION LOGIC ---
+window.reactToGlow = async (id, type, currentCount) => {
+    const updateData = {};
+    updateData[type] = currentCount + 1;
+    await supabaseClient.from('memories').update(updateData).eq('id', id);
+    loadMemories(); 
+};
+
 // --- ADD COMMENT LOGIC ---
 window.addComment = async (memoryId) => {
     const input = document.getElementById(`comment-in-${memoryId}`);
@@ -18,18 +26,20 @@ window.addComment = async (memoryId) => {
         .insert([{ memory_id: memoryId, content: text }]);
 
     if (!error) {
-        loadMemories(); // Refresh to show the new comment
-    } else {
-        alert("Could not add comment. Check if you created the 'comments' table!");
+        loadMemories(); 
     }
 };
 
-// --- REACTION LOGIC ---
-window.reactToGlow = async (id, type, currentCount) => {
-    const updateData = {};
-    updateData[type] = currentCount + 1;
-    await supabaseClient.from('memories').update(updateData).eq('id', id);
-    loadMemories(); 
+// --- DELETE LOGIC ---
+window.deleteGlow = async (id) => {
+    if (confirm("Delete this memory forever?")) {
+        const { error } = await supabaseClient.from('memories').delete().eq('id', id);
+        if (!error) {
+            let myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
+            localStorage.setItem('my_glows', JSON.stringify(myGlows.filter(g => g !== id)));
+            location.reload();
+        }
+    }
 };
 
 async function renderMemoryMarker(mem) {
@@ -40,43 +50,44 @@ async function renderMemoryMarker(mem) {
         iconSize: [12, 12] 
     });
 
-    // Fetch comments for this specific memory
     const { data: comments } = await supabaseClient
         .from('comments')
         .select('content')
         .eq('memory_id', mem.id);
 
-    const commentHTML = (comments || []).map(c => `<div class="comment-item">• ${c.content}</div>`).join('');
+    const commentHTML = (comments || []).map(c => `<div class="comment-item"><span>✨</span> ${c.content}</div>`).join('');
 
     const myGlows = JSON.parse(localStorage.getItem('my_glows') || "[]");
     const isMine = myGlows.includes(mem.id);
 
     const popupHTML = `
-        <div style="color:#222; text-align:center; min-width:180px; font-family: sans-serif;">
-            <div class="popup-comment"><b>"${mem.message}"</b></div>
-            
-            <div class="comments-list">
-                ${commentHTML || '<span style="color:#999">No comments yet...</span>'}
+        <div class="aesthetic-popup">
+            <div class="highlight-box">
+                "${mem.message}"
             </div>
+            
+            <div class="comments-section">
+                <div class="comments-list">
+                    ${commentHTML || '<span class="no-comments">No whispers yet...</span>'}
+                </div>
 
-            <div class="comment-input-group">
-                <input type="text" id="comment-in-${mem.id}" placeholder="Reply...">
-                <button class="comment-btn" onclick="addComment('${mem.id}')">Add</button>
+                <div class="comment-input-group">
+                    <input type="text" id="comment-in-${mem.id}" placeholder="Leave a whisper...">
+                    <button class="comment-btn" onclick="addComment('${mem.id}')">Add</button>
+                </div>
             </div>
             
-            <div style="display:flex; justify-content:space-around; font-size:13px; border-top:1px solid #eee; padding-top:8px; margin-top:8px;">
-                <span style="cursor:pointer" onclick="reactToGlow('${mem.id}', 'hug_count', ${mem.hug_count || 0})">🫂 ${mem.hug_count || 0}</span>
-                <span style="cursor:pointer" onclick="reactToGlow('${mem.id}', 'purpleheart_count', ${mem.purpleheart_count || 0})">💜 ${mem.purpleheart_count || 0}</span>
-                <span style="cursor:pointer" onclick="reactToGlow('${mem.id}', 'like_count', ${mem.like_count || 0})">👍 ${mem.like_count || 0}</span>
+            <div class="reaction-bar">
+                <span onclick="reactToGlow('${mem.id}', 'hug_count', ${mem.hug_count || 0})">🫂 ${mem.hug_count || 0}</span>
+                <span onclick="reactToGlow('${mem.id}', 'purpleheart_count', ${mem.purpleheart_count || 0})">💜 ${mem.purpleheart_count || 0}</span>
+                <span onclick="reactToGlow('${mem.id}', 'like_count', ${mem.like_count || 0})">👍 ${mem.like_count || 0}</span>
             </div>
             
-            ${isMine ? `<button class="delete-btn" onclick="deleteGlow('${mem.id}')">Delete my glow</button>` : ''}
+            ${isMine ? `<button class="delete-btn" onclick="deleteGlow('${mem.id}')">Remove my glow</button>` : ''}
         </div>`;
 
     L.marker([mem.lat, mem.lng], { icon: glowIcon }).addTo(map).bindPopup(popupHTML);
 }
-
-// ... (Keep your existing search, delete, and loadMemories functions here) ...
 
 async function loadMemories() {
     map.eachLayer((layer) => { if (layer instanceof L.Marker) map.removeLayer(layer); });
