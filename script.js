@@ -158,7 +158,7 @@ document.getElementById('send-btn').onclick = async () => {
 // Toggle for Suggestions/Feedback
 document.getElementById('suggestion-toggle').onclick = () => {
     toggleModal('suggestion-box', true);
-    loadFeedback(); // Fetch community ideas when opened
+    loadFeedback(); 
 };
 
 document.getElementById('close-suggestion').onclick = () => toggleModal('suggestion-box', false);
