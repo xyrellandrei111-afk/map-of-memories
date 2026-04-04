@@ -18,7 +18,16 @@ body, html, #map { margin: 0; padding: 0; height: 100%; width: 100%; background:
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
 }
-
+.popup-comment {
+    font-size: 11px;
+    color: #555;
+    font-style: italic;
+    margin: 8px 0;
+    line-height: 1.4;
+    border-left: 2px solid #ff5eb1;
+    padding-left: 8px;
+    text-align: left;
+}
 .leaflet-control-geocoder-form input { color: white !important; background: transparent !important; }
 .leaflet-control-geocoder-icon { filter: invert(1); opacity: 0.7; }
 
@@ -39,15 +48,7 @@ textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rg
 
 /* Delete Button */
 .delete-btn { background: none; border: none; color: #ff4d4d; font-size: 11px; cursor: pointer; margin-top: 10px; text-decoration: underline; width: 100%; }
-.popup-comment {
-    font-size: 11px;
-    color: #555;
-    font-style: italic;
-    margin: 8px 0;
-    line-height: 1.4;
-    border-left: 2px solid #ff5eb1;
-    padding-left: 8px;
-    text-align: left;
+
 }
 /* Navigation */
 .bottom-controls { position: absolute; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px; }
