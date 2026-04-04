@@ -39,7 +39,16 @@ textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rg
 
 /* Delete Button */
 .delete-btn { background: none; border: none; color: #ff4d4d; font-size: 11px; cursor: pointer; margin-top: 10px; text-decoration: underline; width: 100%; }
-
+.popup-comment {
+    font-size: 11px;
+    color: #555;
+    font-style: italic;
+    margin: 8px 0;
+    line-height: 1.4;
+    border-left: 2px solid #ff5eb1;
+    padding-left: 8px;
+    text-align: left;
+}
 /* Navigation */
 .bottom-controls { position: absolute; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px; }
 .nav-link { background: rgba(30, 30, 30, 0.8) !important; color: white; border: 1px solid rgba(255,255,255,0.1); padding: 8px 18px; border-radius: 50px; cursor: pointer; font-size: 11px; }
